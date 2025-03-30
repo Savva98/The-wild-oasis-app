@@ -23,7 +23,9 @@ export const getToday = function (options = {} as { end: boolean }) {
   return today.toISOString();
 };
 
-export const formatCurrency = (value) =>
+export const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en", { style: "currency", currency: "USD" }).format(
     value
   );
+
+export const LinksTo = ["dashboard", "bookings", "cabins", "users", "settings"];
