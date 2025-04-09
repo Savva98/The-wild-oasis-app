@@ -1,3 +1,5 @@
+import { AxiosError } from "axios";
+
 export type Booking = {
   id: number;
   created_at: string;
@@ -31,3 +33,17 @@ export type BookingTypeExpanded = {
   };
   cabins: { name: string };
 } & Omit<Booking, "guests" | "cabins">;
+
+export type CabinType = {
+  id: string;
+  name: string;
+  description: string;
+  regularPrice: number;
+  maxCapacity: number;
+  discount: number;
+  image: string;
+};
+
+export type ErrorType = {
+  message: string;
+} & AxiosError;

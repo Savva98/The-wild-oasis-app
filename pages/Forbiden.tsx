@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useMoveBack } from "../hooks/useMoveBack";
+import { useNavigate } from "react-router-dom";
 
 const ForbiddenContainer = styled.div`
   display: flex;
@@ -39,7 +39,7 @@ const BackButton = styled.button`
 `;
 
 function Forbiden() {
-  const moveBack = useMoveBack();
+  const navigate = useNavigate();
 
   return (
     <ForbiddenContainer>
@@ -47,7 +47,7 @@ function Forbiden() {
       <ForbiddenMessage>
         You do not have permission to access this page.
       </ForbiddenMessage>
-      <BackButton onClick={moveBack}>Go Back</BackButton>
+      <BackButton onClick={() => navigate("/")}>Go Back</BackButton>
     </ForbiddenContainer>
   );
 }

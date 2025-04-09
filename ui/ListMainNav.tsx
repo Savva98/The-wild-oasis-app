@@ -56,16 +56,20 @@ const arrayOfIcons = [
 ];
 
 function ListMainNav({ linkTo, index }: { linkTo: string; index: number }) {
+  const user = { role: "guest" }; // Mock user object for demonstration
+  // Check if the user is an admin and the link is "users"
   return (
     <li>
-      <StyledNavLink to={linkTo}>
-        {arrayOfIcons[index] ? arrayOfIcons[index] : <></>}
-        <span>
-          {linkTo === "dashboard"
-            ? "Home"
-            : linkTo.charAt(0).toUpperCase() + linkTo.slice(1)}
-        </span>
-      </StyledNavLink>
+      {user.role === "admin" || linkTo !== "users" ? (
+        <StyledNavLink to={linkTo}>
+          {arrayOfIcons[index] ? arrayOfIcons[index] : <></>}
+          <span>
+            {linkTo === "dashboard"
+              ? "Home"
+              : linkTo.charAt(0).toUpperCase() + linkTo.slice(1)}
+          </span>
+        </StyledNavLink>
+      ) : null}
     </li>
   );
 }
