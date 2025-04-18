@@ -11,10 +11,18 @@ const StyledAppLayout = styled.div`
 `;
 
 const Main = styled.main`
-  display: flex;
-  flex-direction: column;
   padding: 4rem 4.8rem 6.4rem;
   background-color: var(--color-grey-50);
+  overflow: auto;
+  overflow-x: auto;
+`;
+
+const Conteiner = styled.div`
+  display: flex;
+  max-width: 140rem;
+  flex-direction: column;
+  gap: 3.2rem;
+  margin: 0 auto;
 `;
 
 function Applaout() {
@@ -23,7 +31,9 @@ function Applaout() {
       <Header />
       <Sidebar />
       <Main>
-        <Outlet />
+        <Conteiner>
+          <Outlet />
+        </Conteiner>
       </Main>
     </StyledAppLayout>
   );

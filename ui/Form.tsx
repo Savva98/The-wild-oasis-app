@@ -1,6 +1,22 @@
 import styled, { css } from "styled-components";
 
-const Form = styled.form<{ type: string }>`
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  backdrop-filter: blur(5px); /* Blur effect */
+  z-index: 1000; /* Ensure it appears above other elements */
+`;
+const Form = styled.form<{ type?: string }>`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1100; /* Ensure it appears above the overlay */
+  box-shadow: var(--shadow-lg);
   ${(props) =>
     props.type !== "modal" &&
     css`
@@ -22,4 +38,4 @@ const Form = styled.form<{ type: string }>`
   font-size: 1.4rem;
 `;
 
-export default Form;
+export { Form, Overlay };

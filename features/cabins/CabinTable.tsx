@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import useCabins from "./useCabins";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
+
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 
@@ -16,7 +15,7 @@ const Table = styled.div`
 
 const TableHeader = styled.header`
   display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
+  grid-template-columns: 0.8fr 1.8fr 2.2fr 1fr 1fr 1fr;
   column-gap: 2.4rem;
   align-items: center;
 
@@ -30,16 +29,11 @@ const TableHeader = styled.header`
 `;
 
 function CabinTable() {
-  const { data: cabins, isLoading, error } = useCabins();
-  useEffect(() => {
-    if (error) {
-      toast.error(error.message);
-    }
-  }, [error]);
+  const { data: cabins, isLoading } = useCabins();
+
   if (isLoading) {
     return <Spinner />;
   }
-  console.log(cabins);
   return (
     <Table role="table">
       <TableHeader role="row">

@@ -1,89 +1,164 @@
 import React from "react";
-import styled from "styled-components";
-
+import { useForm } from "react-hook-form";
 import Input from "../../ui/Input";
-import Form from "../../ui/Form";
+import { Form, Overlay } from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
+import { CabinFormType } from "../../types/types";
+import useCreateCabin from "./useCreateCabin";
+import Spinner from "../../ui/Spinner";
+import FormRow from "../../ui/FormRow";
+import styled from "styled-components";
 
-const FormRow = styled.div`
-  display: grid;
-  align-items: center;
-  grid-template-columns: 24rem 1fr 1.2fr;
-  gap: 2.4rem;
-
-  padding: 1.2rem 0;
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-
-  &:has(button) {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1.2rem;
-  }
+const Heading = styled.h2`
+  font-size: 2.4rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2.4rem;
 `;
+function CreateCabinForm({
+  isOpen,
+  onClose,
+  heading = "Add new cabin",
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  heading?: string;
+}) {
+  const { register, handleSubmit, reset, getValues, formState } =
+    useForm<CabinFormType>();
+  const { mutate, isPending } = useCreateCabin();
+  const { errors } = formState;
+  if (!isOpen) return null;
+  if (isPending) {
+    return <Spinner />;
+  }
 
-const Label = styled.label`
-  font-weight: 500;
-`;
+  function onSubmit(cabin: CabinFormType) {
+    if (cabin.image instanceof FileList) {
+      const [file] = cabin.image as FileList;
+      cabin.image = file;
+    }
+    mutate(cabin);
+    reset();
+  }
 
-const Error = styled.span`
-  font-size: 1.4rem;
-  color: var(--color-red-700);
-`;
-
-function CreateCabinForm() {
   return (
-    <Form>
-      <FormRow>
-        <Label htmlFor="name">Cabin name</Label>
-        <Input type="text" id="name" />
-      </FormRow>
+    <>
+      <Overlay onClick={onClose} />
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Heading>{heading}</Heading>
+        <FormRow label="Cabin name" error={errors.name?.message}>
+          <Input
+            type="text"
+            id="name"
+            {...register("name", {
+              required: "This field is required",
+              minLength: {
+                value: 3,
+                message: "Name must be at least 3 characters long",
+              },
+            })}
+          />
+        </FormRow>
 
-      <FormRow>
-        <Label htmlFor="maxCapacity">Maximum capacity</Label>
-        <Input type="number" id="maxCapacity" />
-      </FormRow>
+        <FormRow label="Maximum capacity" error={errors.maxCapacity?.message}>
+          <Input
+            type="number"
+            id="maxCapacity"
+            {...register("maxCapacity", {
+              required: "This field is required",
+              valueAsNumber: true,
+              min: {
+                value: 1,
+                message: "Maximum capacity must be at least 1",
+              },
+            })}
+          />
+        </FormRow>
 
-      <FormRow>
-        <Label htmlFor="regularPrice">Regular price</Label>
-        <Input type="number" id="regularPrice" />
-      </FormRow>
+        <FormRow label="Regular price" error={errors.regularPrice?.message}>
+          <Input
+            type="number"
+            id="regularPrice"
+            {...register("regularPrice", {
+              required: "This field is required",
+              valueAsNumber: true,
+            })}
+          />
+        </FormRow>
 
-      <FormRow>
-        <Label htmlFor="discount">Discount</Label>
-        <Input type="number" id="discount" defaultValue={0} />
-      </FormRow>
+        <FormRow label="Discount" error={errors.discount?.message}>
+          <Input
+            type="number"
+            id="discount"
+            defaultValue={0}
+            {...register("discount", {
+              required: "This field is required",
+              valueAsNumber: true,
+              validate: {
+                isPositive: (value) => {
+                  if (value < 0) {
+                    return "Discount must be a positive number";
+                  }
+                  return true;
+                },
+                isLessThanRegularPrice: (value) => {
+                  if (value > getValues().regularPrice) {
+                    return "Discount must be less than regular price";
+                  }
+                  return true;
+                },
+              },
+            })}
+          />
+        </FormRow>
 
-      <FormRow>
-        <Label htmlFor="description">Description for website</Label>
-        <Textarea type="number" id="description" defaultValue="" />
-      </FormRow>
+        <FormRow
+          label="Description for cabin"
+          error={errors.description?.message}
+        >
+          <Textarea
+            type="number"
+            id="description"
+            defaultValue=""
+            {...register("description", {
+              required: "This field is required",
+              minLength: {
+                value: 10,
+                message: "Description must be at least 10 characters long",
+              },
+            })}
+          />
+        </FormRow>
 
-      <FormRow>
-        <Label htmlFor="image">Cabin photo</Label>
-        <FileInput id="image" accept="image/*" />
-      </FormRow>
+        <FormRow label="Cabin photo">
+          <FileInput
+            id="image"
+            accept="image/*"
+            type="file"
+            {...register("image", {
+              required: "This field is required",
+            })}
+          />
+        </FormRow>
 
-      <FormRow>
-        {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
-          Cancel
-        </Button>
-        <Button>Edit cabin</Button>
-      </FormRow>
-    </Form>
+        <FormRow>
+          <Button
+            variant="secondary"
+            size="small"
+            type="reset"
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button variant="primary" size="medium" disabled={isPending}>
+            Add cabin
+          </Button>
+        </FormRow>
+      </Form>
+    </>
   );
 }
 

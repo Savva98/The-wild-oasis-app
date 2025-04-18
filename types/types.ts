@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import { FieldError } from "react-hook-form";
 
 export type Booking = {
   id: number;
@@ -47,3 +48,16 @@ export type CabinType = {
 export type ErrorType = {
   message: string;
 } & AxiosError;
+
+export type CabinFormType = {
+  image?: FileList | File;
+} & Omit<CabinType, "id" | "image">;
+
+export type ErrorFormType = {
+  name?: FieldError;
+  maxCapacity?: FieldError;
+  regularPrice?: FieldError;
+  discount?: FieldError;
+  description?: FieldError;
+  image?: FieldError;
+};

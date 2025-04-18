@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
-const StyledSelect = styled.select<{ type: string }>`
+const StyledSelect = styled("select").withConfig({
+  shouldForwardProp: (prop) => !["type"].includes(prop),
+})<{ type: string }>`
   font-size: 1.4rem;
   padding: 0.8rem 1.2rem;
   border: 1px solid

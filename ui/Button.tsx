@@ -48,7 +48,9 @@ const variations = {
   `,
 };
 
-const Button = styled.button<{
+const Button = styled("button").withConfig({
+  shouldForwardProp: (prop) => !["size", "variant"].includes(prop),
+})<{
   size?: keyof typeof sizes;
   variant?: keyof typeof variations;
 }>`

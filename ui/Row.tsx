@@ -11,7 +11,7 @@ const Row = styled.div<{ type: "horizontal" | "vertical" }>`
       align-items: center;
     `}
   ${(props) =>
-    props.type === "vertical" && `flex-direction: column; gap: 1.6rem;`}
+    props.type === "vertical" && `flex-direction: column; gap: 1.6rem; `}
 `;
 
 export default Row;

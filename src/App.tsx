@@ -27,7 +27,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const isAuthenticated = false; // Replace with actual authentication logic
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -44,11 +43,7 @@ function App() {
             <Route
               path="users"
               element={
-                <ProtectedRoute
-                  isAuthenticated={isAuthenticated}
-                  allowedRoles={["admin"]}
-                  userRole=""
-                >
+                <ProtectedRoute>
                   <Users />
                 </ProtectedRoute>
               }
@@ -61,13 +56,22 @@ function App() {
       </BrowserRouter>
       <Toaster
         position="top-center"
+        gutter={12}
+        containerStyle={{ margin: "8px" }}
         toastOptions={{
-          duration: 3000,
+          success: {
+            duration: 3000,
+          },
+          error: {
+            duration: 4000,
+          },
           style: {
-            backgroundColor: "var(--color-grey-900)",
-            color: "var(--color-white)",
-            fontSize: "1.4rem",
+            backgroundColor: "var(--color-grey-0)",
+            color: "var(--color-gey-700)",
+            fontSize: "16px",
             fontFamily: "var(--font-family-default)",
+            maxWidth: "400px",
+            padding: "16px 24px",
           },
         }}
       />
