@@ -1,31 +1,17 @@
 import api from "./axiosSetUp";
+import { logOut } from "./logoutFunction";
+import { RedirectToLogin } from "./RedirectToLogin";
 
 let csrfToken = "";
 
-async function fetchCsrfToken() {
-  try {
-    const response = await api.get(`/sanctum/csrf-token`);
-    csrfToken = response.data.csrfToken;
-    api.defaults.headers.common["X-CSRF-Token"] = csrfToken;
-  } catch (error) {
-    console.error("Error fetching CSRF token:", error);
-    throw error;
-  }
-}
 async function refreshCsrfToken() {
   try {
-    const response = await api.get("/sanctum/getnewCsrfToken");
+    const response = await api.post("/sanctum/getnewCsrfToken");
     csrfToken = response.data.csrfToken;
     api.defaults.headers.common["X-CSRF-Token"] = csrfToken;
   } catch (error) {
     console.error("Error refreshing CSRF token:", error);
     throw error;
-  }
-}
-
-export async function initializeCsrfToken() {
-  if (!csrfToken) {
-    await fetchCsrfToken();
   }
 }
 
@@ -38,6 +24,10 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (error.response?.status === 401) {
+      RedirectToLogin();
+      return Promise.reject(error);
+    }
     const originalRequest = error.config;
     if (
       error.response.status === 403 &&
@@ -49,6 +39,8 @@ api.interceptors.response.use(
         await refreshCsrfToken();
         return api(originalRequest);
       } catch (err) {
+        await logOut();
+        RedirectToLogin();
         return Promise.reject(err);
       }
     }
