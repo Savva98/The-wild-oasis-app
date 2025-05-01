@@ -52,6 +52,9 @@ export type ErrorType = {
 export type CabinFormType = {
   image?: FileList | File;
 } & Omit<CabinType, "id" | "image">;
+export type EditCabinFormType = {
+  image?: FileList | File | string;
+} & Omit<CabinType, "image">;
 
 export type ErrorFormType = {
   name?: FieldError;

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { CabinType } from "../../types/types";
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
 import useDeleteCabin from "./useDeleteCabin";
 import Spinner from "../../ui/Spinner";
+import EditCabinForm from "./EditCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -47,8 +48,10 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }: { cabin: CabinType }) {
-  const { name, maxCapacity, regularPrice, discount, image, id } = cabin;
   const mutationCabins = useDeleteCabin();
+  const [showForm, setShowForm] = useState(false);
+  const { name, maxCapacity, regularPrice, discount, image, id } = cabin;
+  // console.log(Object.fromEntries(cabin))
   if (mutationCabins.isPending) {
     return <Spinner />;
   }
@@ -56,16 +59,33 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
     mutationCabins.mutate(id);
   };
   return (
-    <TableRow>
-      <Img src={`/img/cabins/${image}`} alt={name} />
-      <Cabin>{name}</Cabin>
-      <div>Fits up to {maxCapacity} guests</div>
-      <Price>{formatCurrency(regularPrice)}</Price>
-      <Discount>{formatCurrency(discount)}</Discount>
-      <Button variant="danger" onClick={handleDelete}>
-        Delete
-      </Button>
-    </TableRow>
+    <>
+      <TableRow>
+        <Img src={`/img/cabins/${image}`} alt={name} />
+        <Cabin>{name}</Cabin>
+        <div>Fits up to {maxCapacity} guests</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>{formatCurrency(discount)}</Discount>
+        <div>
+          <button onClick={() => setShowForm(true)}>Edit</button>
+          <Button
+            variant="danger"
+            disabled={mutationCabins.isPending}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        </div>
+      </TableRow>
+      {showForm && (
+        <EditCabinForm
+          cabin={cabin}
+          isOpen={showForm}
+          onClose={() => setShowForm(false)}
+          heading={`Edit the cabin ${name}`}
+        />
+      )}
+    </>
   );
 }
 

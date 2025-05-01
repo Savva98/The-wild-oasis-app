@@ -29,3 +29,16 @@ export const formatCurrency = (value: number) =>
   );
 
 export const LinksTo = ["dashboard", "bookings", "cabins", "users", "settings"];
+
+export const removeFields = function <T extends object>(
+  obj: T,
+  fields: string[]
+) {
+  const newObj = Object.keys(obj)
+    .filter((key) => !fields.includes(key))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {} as T);
+  return newObj;
+};

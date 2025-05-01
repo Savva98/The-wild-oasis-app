@@ -5,8 +5,8 @@ import { Form, Overlay } from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
-import { CabinFormType } from "../../types/types";
-import useCreateCabin from "./useCreateCabin";
+import { EditCabinFormType } from "../../types/types";
+import useEditCabin from "./useEditCabin";
 import Spinner from "../../ui/Spinner";
 import FormRow from "../../ui/FormRow";
 import styled from "styled-components";
@@ -17,30 +17,36 @@ const Heading = styled.h2`
   text-align: center;
   margin-bottom: 2.4rem;
 `;
-function CreateCabinForm({
-  isOpen,
-  onClose,
-  heading = "Add new cabin",
-}: {
+type EditCabinProp = {
   isOpen: boolean;
   onClose: () => void;
   heading?: string;
-}) {
+  cabin: EditCabinFormType;
+};
+
+function EditCabinForm({
+  isOpen,
+  onClose,
+  heading = "Add new cabin",
+  cabin,
+}: EditCabinProp) {
+  const { ...cabinData } = cabin;
   const { register, handleSubmit, reset, getValues, formState } =
-    useForm<CabinFormType>();
-  const { mutate, isPending } = useCreateCabin();
+    useForm<EditCabinFormType>({ defaultValues: cabinData });
+  const { mutate, isPending } = useEditCabin();
+
   const { errors } = formState;
   if (!isOpen) return null;
   if (isPending) {
     return <Spinner />;
   }
-
-  function onSubmit(cabin: CabinFormType) {
-    if (cabin.image instanceof FileList) {
-      const [file] = cabin.image as FileList;
-      cabin.image = file;
+  function onSubmit(cabinToAdd: EditCabinFormType) {
+    if (cabinToAdd.image instanceof FileList) {
+      const [file] = cabinToAdd.image as FileList;
+      cabinToAdd.image = file;
     }
-    mutate(cabin);
+    cabinToAdd.id = cabin.id;
+    mutate(cabinToAdd);
     reset();
   }
 
@@ -134,13 +140,7 @@ function CreateCabinForm({
         </FormRow>
 
         <FormRow label="Cabin photo">
-          <FileInput
-            id="image"
-            accept="image/*"
-            {...register("image", {
-              required: "This field is required",
-            })}
-          />
+          <FileInput id="image" accept="image/*" />
         </FormRow>
 
         <FormRow>
@@ -153,7 +153,7 @@ function CreateCabinForm({
             Cancel
           </Button>
           <Button variant="primary" size="medium" disabled={isPending}>
-            Create new cabin
+            Save changes
           </Button>
         </FormRow>
       </Form>
@@ -161,4 +161,4 @@ function CreateCabinForm({
   );
 }
 
-export default CreateCabinForm;
+export default EditCabinForm;
