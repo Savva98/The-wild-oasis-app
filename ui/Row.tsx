@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-const Row = styled.div<{ type: "horizontal" | "vertical" }>`
+const Row = styled.div<{ type?: "horizontal" | "vertical" }>`
   display: flex;
   width: 100%;
   ${(props) =>
@@ -13,5 +13,7 @@ const Row = styled.div<{ type: "horizontal" | "vertical" }>`
   ${(props) =>
     props.type === "vertical" && `flex-direction: column; gap: 1.6rem; `}
 `;
-
+Row.defaultProps = {
+  type: "vertical",
+};
 export default Row;

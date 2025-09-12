@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import Input from "../../ui/Input";
-import { Form, Overlay } from "../../ui/Form";
+import { Form } from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { EditCabinFormType } from "../../types/types";
-import useEditCabin from "./useEditCabin";
+import useUpdateCabin from "./useUpdateCabin";
 import Spinner from "../../ui/Spinner";
 import FormRow from "../../ui/FormRow";
 import styled from "styled-components";
+import { ModalContext } from "../../ui/Modal";
 
 const Heading = styled.h2`
   font-size: 2.4rem;
@@ -18,25 +19,19 @@ const Heading = styled.h2`
   margin-bottom: 2.4rem;
 `;
 type EditCabinProp = {
-  isOpen: boolean;
-  onClose: () => void;
-  heading?: string;
   cabin: EditCabinFormType;
 };
 
-function EditCabinForm({
-  isOpen,
-  onClose,
-  heading = "Add new cabin",
-  cabin,
-}: EditCabinProp) {
+function EditCabinForm({ cabin }: EditCabinProp) {
   const { ...cabinData } = cabin;
-  const { register, handleSubmit, reset, getValues, formState } =
-    useForm<EditCabinFormType>({ defaultValues: cabinData });
-  const { mutate, isPending } = useEditCabin();
+  const { mutate, isPending, data, isError } = useUpdateCabin();
+  const { onClose } = useContext(ModalContext) || {};
+  const { register, handleSubmit, getValues, formState } =
+    useForm<EditCabinFormType>({
+      defaultValues: data?.cabins ? data.cabins : cabinData,
+    });
 
   const { errors } = formState;
-  if (!isOpen) return null;
   if (isPending) {
     return <Spinner />;
   }
@@ -46,15 +41,16 @@ function EditCabinForm({
       cabinToAdd.image = file;
     }
     cabinToAdd.id = cabin.id;
-    mutate(cabinToAdd);
-    reset();
+    mutate({ ...cabinToAdd }, { onSuccess: () => onClose?.() });
+    if (isError) {
+      return;
+    }
   }
 
   return (
     <>
-      <Overlay onClick={onClose} />
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Heading>{heading}</Heading>
+      <Form onSubmit={handleSubmit(onSubmit)} type={onClose && "modal"}>
+        <Heading>{`Edit a cabin ${cabin.name}`}</Heading>
         <FormRow label="Cabin name" error={errors.name?.message}>
           <Input
             type="text"

@@ -1,7 +1,10 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useContext } from "react";
 import Button from "./Button";
 import Heading from "./Heading";
+import useDeleteCabin from "../features/cabins/useDeleteCabin";
+import Spinner from "./Spinner";
+import { ModalContext } from "./Modal";
 
 const StyledConfirmDelete = styled.div`
   width: 40rem;
@@ -23,24 +26,42 @@ const StyledConfirmDelete = styled.div`
 
 type ConfirmDelete = {
   resourceName: string;
-  onConfirm: () => void;
-  disabled: boolean;
+  id: string;
 };
 
-function ConfirmDelete({ resourceName, onConfirm, disabled }: ConfirmDelete) {
+function ConfirmDelete({ resourceName, id }: ConfirmDelete) {
+  const mutationCabins = useDeleteCabin();
+  const { onClose, isOpen } = useContext(ModalContext) || {};
+  if (mutationCabins.isPending) {
+    return <Spinner />;
+  }
+  const handleDelete = () => {
+    mutationCabins.mutate(id);
+  };
+  if (typeof isOpen === "boolean") {
+    return null;
+  }
   return (
     <StyledConfirmDelete>
       <Heading as="h3">Delete {resourceName}</Heading>
       <p>
-        Are you sure you want to delete this {resourceName} permanently? This
+        Are you sure you want to delete cabin: {resourceName} permanently? This
         action cannot be undone.
       </p>
 
       <div>
-        <Button variation="secondary" disabled={disabled}>
+        <Button
+          variant="secondary"
+          disabled={mutationCabins.isPending}
+          onClick={onClose}
+        >
           Cancel
         </Button>
-        <Button variation="danger" disabled={disabled}>
+        <Button
+          variant="danger"
+          disabled={mutationCabins.isPending}
+          onClick={handleDelete}
+        >
           Delete
         </Button>
       </div>

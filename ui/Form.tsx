@@ -1,24 +1,30 @@
 import styled, { css } from "styled-components";
+const sizes = {
+  mobileS: "320px",
+  mobileM: "375px",
+  mobileL: "425px",
+  tablet: "768px",
+  laptop: "1024px",
+  laptopL: "1440px",
+  desktop: "2560px",
+};
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-  backdrop-filter: blur(5px); /* Blur effect */
-  z-index: 1000; /* Ensure it appears above other elements */
-`;
-const Form = styled.form<{ type?: string }>`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1100; /* Ensure it appears above the overlay */
-  box-shadow: var(--shadow-lg);
+const media = {
+  mobileS: `(min-width: ${sizes.mobileS})`,
+  mobileM: `(min-width: ${sizes.mobileM})`,
+  mobileL: `(min-width: ${sizes.mobileL})`,
+  tablet: `(min-width: ${sizes.tablet})`,
+  laptop: `(min-width: ${sizes.laptop})`,
+  laptopL: `(min-width: ${sizes.laptopL})`,
+  desktop: `(min-width: ${sizes.desktop})`,
+};
+
+const Form = styled.form<{
+  type?: "modal" | "regular";
+  children: React.ReactNode;
+}>`
   ${(props) =>
-    props.type !== "modal" &&
+    props.type === "regular" &&
     css`
       padding: 2.4rem 4rem;
 
@@ -29,13 +35,25 @@ const Form = styled.form<{ type?: string }>`
     `}
 
   ${(props) =>
-    props.type === "modal" &&
+    props?.type === "modal" &&
     css`
       width: 80rem;
     `}
     
   overflow: hidden;
   font-size: 1.4rem;
+  @media ${media.tablet} {
+    padding: 1.5rem 3rem;
+    font-size: 1.2rem;
+  }
+  @media ${media.laptop} {
+    padding: 2.4rem 4rem;
+    font-size: 1.4rem;
+  }
 `;
 
-export { Form, Overlay };
+Form.defaultProps = {
+  type: "regular",
+};
+
+export { Form };

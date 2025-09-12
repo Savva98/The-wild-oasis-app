@@ -64,3 +64,34 @@ export type ErrorFormType = {
   description?: FieldError;
   image?: FieldError;
 };
+
+export type SettingsType = {
+  minimumNights: number;
+  maximumNights: number;
+  cleaningFee: number;
+  maximumGuests: number;
+  breakfastPrice: number;
+  _id: string;
+};
+export type UpdateSettinType = Partial<SettingsType>;
+
+export type ModalContextType = {
+  isOpen: boolean | string;
+  onOpen: (modal?: string) => void;
+  heading?: string;
+  onClose?: () => void;
+};
+
+export type TableContextType = {
+  columns?: string;
+};
+
+export type MenusContextType = {
+  isOpen: string | null;
+  onOpen: (id: string) => void;
+  onClose: () => void;
+  position: { x: number; y: number } | null;
+  setPosition: React.Dispatch<
+    React.SetStateAction<{ x: number; y: number } | null>
+  >;
+};

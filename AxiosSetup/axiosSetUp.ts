@@ -12,9 +12,6 @@ export const errorHandler = <T, A extends unknown[]>(
   return async (...args: A): Promise<T> => {
     try {
       const result = await fn(...args);
-      if (result === undefined) {
-        throw new Error("Function returned undefined");
-      }
       return result;
     } catch (error) {
       const err = error as ErrorType;

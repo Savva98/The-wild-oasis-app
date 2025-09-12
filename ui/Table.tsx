@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import React, { createContext } from "react";
+import { CabinType, TableContextType } from "../types/types";
 
 const StyledTable = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -9,9 +11,11 @@ const StyledTable = styled.div`
   overflow: hidden;
 `;
 
-const CommonRow = styled.div<{ columns: string }>`
+const CommonRow = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "columns",
+})<{ columns?: string }>`
   display: grid;
-  grid-template-columns: ${(props) => props.columns};
+  grid-template-columns: ${(props) => props?.columns};
   column-gap: 2.4rem;
   align-items: center;
   transition: none;
@@ -30,6 +34,7 @@ const StyledHeader = styled(CommonRow)`
 
 const StyledRow = styled(CommonRow)`
   padding: 1.2rem 2.4rem;
+  position: relative;
 
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-grey-100);
@@ -58,3 +63,57 @@ const Empty = styled.p`
   text-align: center;
   margin: 2.4rem;
 `;
+
+const TableContext = createContext<TableContextType>({});
+
+function Table({
+  children,
+  columns,
+}: {
+  children: React.ReactNode;
+  columns?: string;
+}) {
+  return (
+    <TableContext.Provider value={{ columns }}>
+      <StyledTable role="table">{children}</StyledTable>
+    </TableContext.Provider>
+  );
+}
+
+function Header({ children }: { children: React.ReactNode }) {
+  const { columns } = React.useContext(TableContext);
+  return (
+    <StyledHeader role="row" columns={columns} as="header">
+      {children}
+    </StyledHeader>
+  );
+}
+
+function Row({ children, id }: { children: React.ReactNode; id: string }) {
+  const { columns: contextColumns } = React.useContext(TableContext);
+  return (
+    <StyledRow role="row" columns={contextColumns} data-id={id}>
+      {children}
+    </StyledRow>
+  );
+}
+
+function Body({
+  data,
+  render,
+}: {
+  data: CabinType[] | undefined;
+  render: (cabin: CabinType) => React.ReactNode;
+}) {
+  if (data?.length === 0) {
+    return <Empty>No data found</Empty>;
+  }
+  return <StyledBody>{data?.map(render)}</StyledBody>;
+}
+
+Table.Header = Header;
+Table.Row = Row;
+Table.Body = Body;
+Table.Footer = Footer;
+
+export default Table;

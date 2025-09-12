@@ -1,4 +1,9 @@
+import React, { createContext, useContext, useState } from "react";
+import { createPortal } from "react-dom";
+import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
+import { ModalContextType } from "../types/types";
+import OpenModalButton from "./Button";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -10,6 +15,7 @@ const StyledModal = styled.div`
   box-shadow: var(--shadow-lg);
   padding: 3.2rem 4rem;
   transition: all 0.5s;
+  z-index: 1300;
 `;
 
 const Overlay = styled.div`
@@ -20,7 +26,7 @@ const Overlay = styled.div`
   height: 100vh;
   background-color: var(--backdrop-color);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 1200;
   transition: all 0.5s;
 `;
 
@@ -48,3 +54,87 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+const ModalContext = createContext<ModalContextType | null>(null);
+
+function Modal({ children }: { children: React.ReactNode }) {
+  const [openModal, setIsOpen] = useState<boolean | string>(false);
+  const onClose = () => {
+    if (typeof openModal === "string") {
+      setIsOpen("");
+      return;
+    }
+    setIsOpen(false);
+    return;
+  };
+  const onOpen = (modal?: string) => {
+    if (modal) {
+      setIsOpen(modal);
+      return;
+    }
+    setIsOpen(true);
+  };
+
+  return (
+    <ModalContext.Provider
+      value={{
+        isOpen: openModal,
+        onOpen,
+        onClose,
+      }}
+    >
+      {children}
+    </ModalContext.Provider>
+  );
+}
+
+function ModalOpenButton({
+  text,
+  children,
+}: {
+  text?: string;
+  children?: React.ReactNode;
+}) {
+  const { onOpen } = useContext(ModalContext) || {};
+  if (!children) {
+    return (
+      <OpenModalButton
+        variant="primary"
+        size="large"
+        onClick={() => onOpen && onOpen()}
+      >
+        {text}
+      </OpenModalButton>
+    );
+  }
+  return <div>{children}</div>;
+}
+
+function ModalContent({
+  children,
+  name,
+}: {
+  children: React.ReactNode;
+  name?: string;
+}) {
+  const { isOpen, onClose } = useContext(ModalContext) || {};
+  if (!isOpen) return null;
+  if (typeof isOpen === "string" && isOpen !== name) return null;
+  if (typeof isOpen === "boolean" && name) return null;
+  return createPortal(
+    <>
+      <Overlay onClick={onClose} />
+      <StyledModal>
+        <Button onClick={onClose}>
+          <HiXMark />
+        </Button>
+        <div>{children}</div>
+      </StyledModal>
+    </>,
+    document.body
+  );
+}
+
+Modal.OpenButton = ModalOpenButton;
+Modal.Content = ModalContent;
+export { Modal, ModalContext };
