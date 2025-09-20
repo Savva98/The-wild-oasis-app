@@ -4,7 +4,7 @@ import { formatDistance, parseISO, differenceInDays } from "date-fns";
 export const subtractDates = (dateStr1: string, dateStr2: string) =>
   differenceInDays(parseISO(String(dateStr1)), parseISO(String(dateStr2)));
 
-export const formatDistanceFromNow = (dateStr: string) =>
+export const formatDistanceFromNow = (dateStr: Date) =>
   formatDistance(parseISO(dateStr), new Date(), {
     addSuffix: true,
   })
@@ -30,15 +30,27 @@ export const formatCurrency = (value: number) =>
 
 export const LinksTo = ["dashboard", "bookings", "cabins", "users", "settings"];
 
-export const removeFields = function <T extends object>(
+export const removeFields = function <T extends Record<string, any>>(
   obj: T,
   fields: string[]
 ) {
   const newObj = Object.keys(obj)
     .filter((key) => !fields.includes(key))
     .reduce((acc, key) => {
-      acc[key] = obj[key];
+      acc[key as keyof T] = obj[key as keyof T];
       return acc;
-    }, {} as T);
+    }, {} as Partial<T>);
   return newObj;
+};
+
+export const sortingQuery = function (sortBy: string) {
+  if (sortBy.includes("desc")) {
+    const [column] = sortBy.split("-");
+    return `-${column}`;
+  } else if (sortBy.includes("asc")) {
+    const [column] = sortBy.split("-");
+    return column;
+  } else {
+    return null;
+  }
 };

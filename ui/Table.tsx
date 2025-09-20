@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { createContext } from "react";
-import { CabinType, TableContextType } from "../types/types";
+import { TableContextType } from "../types/types";
 
 const StyledTable = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -89,7 +89,7 @@ function Header({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Row({ children, id }: { children: React.ReactNode; id: string }) {
+function Row({ children, id }: { children: React.ReactNode; id?: string }) {
   const { columns: contextColumns } = React.useContext(TableContext);
   return (
     <StyledRow role="row" columns={contextColumns} data-id={id}>
@@ -98,12 +98,12 @@ function Row({ children, id }: { children: React.ReactNode; id: string }) {
   );
 }
 
-function Body({
+function Body<T>({
   data,
   render,
 }: {
-  data: CabinType[] | undefined;
-  render: (cabin: CabinType) => React.ReactNode;
+  data: T[] | undefined;
+  render: (item: T) => React.ReactNode;
 }) {
   if (data?.length === 0) {
     return <Empty>No data found</Empty>;

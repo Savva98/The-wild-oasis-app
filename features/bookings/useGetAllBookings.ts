@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { getCabinsByQuery } from "../../services/apiCabins";
+import { getBookings } from "../../services/apiBookings";
 
-function useCabinsByQuery(query: string) {
+function useGetAllBookings() {
   const { data, error, isLoading } = useQuery({
-    queryKey: ["cabins", query],
-    queryFn: () => getCabinsByQuery(query),
+    queryKey: ["bookings"],
+    queryFn: getBookings,
     refetchOnWindowFocus: false,
     retry: false,
   });
@@ -18,4 +18,4 @@ function useCabinsByQuery(query: string) {
   return { data, isLoading };
 }
 
-export { useCabinsByQuery };
+export { useGetAllBookings };

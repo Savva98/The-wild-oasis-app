@@ -1,10 +1,19 @@
 import React from "react";
+import { useGetAllBookings } from "./useGetAllBookings";
 import BookingRow from "./BookingRow";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
+import Empty from "../../ui/Empty";
+import { BookingType } from "../../types/types";
 
 function BookingTable() {
-  const bookings = [];
+  const { data: bookings, isLoading } = useGetAllBookings();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!bookings || bookings.length === 0) {
+    return <Empty resource="bookings" />;
+  }
 
   return (
     <Menus>
@@ -18,7 +27,7 @@ function BookingTable() {
           <div></div>
         </Table.Header>
 
-        <Table.Body
+        <Table.Body<BookingType>
           data={bookings}
           render={(booking) => (
             <BookingRow key={booking.id} booking={booking} />

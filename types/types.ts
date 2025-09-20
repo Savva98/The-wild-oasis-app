@@ -1,39 +1,21 @@
 import { AxiosError } from "axios";
 import { FieldError } from "react-hook-form";
 
-export type Booking = {
-  id: number;
-  created_at: string;
-  startDate: string;
-  endDate: string;
-  numNights: number;
-  numGuests: number;
-  totalPrice: number;
-  status: "unconfirmed" | "checked-in" | "checked-out";
-  guests:
-    | { fullName: string; email: string }
-    | { fullName: string; email: string }[];
-  cabins: { name: string } | { name: string }[];
-};
-export type BookingType = {
-  booking: Booking;
-};
-
-export type BookingTypeExpanded = {
-  cabinPrice: number;
-  extrasPrice: number;
-  hasBreakfast: boolean;
-  observations: string;
-  isPaid: boolean;
-  guests: {
-    fullName: string;
-    email: string;
-    nationality: string;
-    countryFlag: string;
-    nationalID: string;
-  };
-  cabins: { name: string };
-} & Omit<Booking, "guests" | "cabins">;
+// export type BookingTypeExpanded = {
+//   cabinPrice: number;
+//   extrasPrice: number;
+//   hasBreakfast: boolean;
+//   observations: string;
+//   isPaid: boolean;
+//   guests: {
+//     fullName: string;
+//     email: string;
+//     nationality: string;
+//     countryFlag: string;
+//     nationalID: string;
+//   };
+//   cabins: { name: string };
+// } & Omit<Booking, "guests" | "cabins">;
 
 export type CabinType = {
   id: string;
@@ -94,4 +76,34 @@ export type MenusContextType = {
   setPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number } | null>
   >;
+};
+
+export type BookingType = {
+  id: string;
+  created_at: Date;
+  startDate: Date;
+  endDate: Date;
+  numberOfNights: number;
+  totalPrice: number;
+  guestId: {
+    _id: string;
+    fullName: string;
+    email: string;
+    nationality: string;
+    countryFlag: string;
+  };
+  cabinId: {
+    _id: string;
+    name: string;
+  };
+  hasBreakfast?: boolean;
+  observations?: string;
+  isPaid?: boolean;
+  numGuests: number;
+  status:
+    | "unconfirmed"
+    | "confirmed"
+    | "checked-in"
+    | "checked-out"
+    | "canceled";
 };

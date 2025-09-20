@@ -1,7 +1,19 @@
+import { errorHandler } from "../AxiosSetup/axiosSetUp";
+import { BookingType } from "../types/types";
 import { getToday } from "../utils/helpers";
 import axios from "axios";
 
 const api = import.meta.env.VITE_API_URL;
+
+async function getAllBookings() {
+  const res = await axios(api + "/bookings", {
+    method: "GET",
+  });
+  if (res.data.status === "success") {
+    return res.data.bookings as BookingType[];
+  }
+  throw new Error("Bookings could not get loaded");
+}
 
 export async function getBooking(id: string) {
   try {
@@ -35,42 +47,18 @@ export async function getBookingsAfterDate(date: string) {
 }
 
 // Returns all STAYS that are were created after the given date
-export async function getStaysAfterDate(date) {
-  const { data, error } = await supabase
-    .from("bookings")
-    // .select('*')
-    .select("*, guests(fullName)")
-    .gte("startDate", date)
-    .lte("startDate", getToday());
-
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+async function getStaysAfterDate(date: Date) {
+  const res = await axios(api + "/bookings?dateFrom=" + date, {
+    method: "GET",
+  });
+  if (res.data.status === "success") {
+    return res.data.bookings as BookingType[];
   }
-
-  return data;
+  throw new Error("Bookings could not get loaded");
 }
+export const getBookings = errorHandler(getAllBookings);
+export const getStays = errorHandler(getStaysAfterDate);
 
-// Activity means that there is a check in or a check out today
-// export async function getStaysTodayActivity() {
-//   const { data, error } = await supabase
-//     .from("bookings")
-//     .select("*, guests(fullName, nationality, countryFlag)")
-//     .or(
-//       `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
-//     )
-//     .order("created_at");
-
-//   // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
-//   // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
-//   // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
-
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Bookings could not get loaded");
-//   }
-//   return data;
-// }
 
 // export async function updateBooking(id, obj) {
 //   const { data, error } = await supabase

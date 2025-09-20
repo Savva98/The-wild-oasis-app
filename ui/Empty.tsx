@@ -1,10 +1,6 @@
 import React from "react";
 
-type EmptyType = {
-  resource: [];
-};
-
-function Empty({ resource }: EmptyType) {
+function Empty({ resource }: { resource?: string }) {
   return <p>No {resource} could be found.</p>;
 }
 

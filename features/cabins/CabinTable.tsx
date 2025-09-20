@@ -1,40 +1,31 @@
 // import styled from "styled-components";
-import useCabins from "./useCabins";
+import { useCabinsByQuery } from "./useCabins";
 
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
-
-// const Table = styled.div`
-//   border: 1px solid var(--color-grey-200);
-
-//   font-size: 1.4rem;
-//   background-color: var(--color-grey-0);
-//   border-radius: 7px;
-//   overflow: hidden;
-// `;
-
-// const TableHeader = styled.header`
-//   display: grid;
-//   column-gap: 2.4rem;
-//   align-items: center;
-
-//   background-color: var(--color-grey-50);
-//   border-bottom: 1px solid var(--color-grey-100);
-//   text-transform: uppercase;
-//   letter-spacing: 0.4px;
-//   font-weight: 600;
-//   color: var(--color-grey-600);
-//   padding: 1.6rem 2.4rem;
-// `;
+import { useSearchParams } from "react-router";
+import { CabinType } from "../../types/types";
+import { sortingQuery } from "../../utils/helpers";
+import Empty from "../../ui/Empty";
 
 function CabinTable() {
-  const { data: cabins, isLoading } = useCabins();
-
-  if (isLoading) {
+  const [searchParams] = useSearchParams();
+  const filterValue = searchParams.get("discount") || "all";
+  const sortBy = sortingQuery(searchParams.get("sortBy") || "");
+  const query = `${filterValue !== "all" ? `discount=${filterValue}` : ""}${
+    sortBy ? `&sort=${sortBy}` : ""
+  }`;
+  const { data: cabinsByQuery, isLoading: isLoadingByQuery } =
+    useCabinsByQuery(query);
+  if (isLoadingByQuery) {
     return <Spinner />;
   }
+  if (!cabinsByQuery || cabinsByQuery.length === 0) {
+    return <Empty resource="cabins" />;
+  }
+
   return (
     <Menus>
       <Table columns="0.8fr 1.8fr 2.2fr 1fr 1fr 1fr">
@@ -46,8 +37,8 @@ function CabinTable() {
           <div>Discount</div>
           <div></div>
         </Table.Header>
-        <Table.Body
-          data={cabins}
+        <Table.Body<CabinType>
+          data={cabinsByQuery || ([] as CabinType[])}
           render={(cabin) => <CabinRow key={cabin.id} cabin={cabin} />}
         />
       </Table>

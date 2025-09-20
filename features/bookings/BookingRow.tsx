@@ -7,7 +7,7 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
-import { Booking } from "../../types/types";
+import { BookingType } from "../../types/types";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -36,18 +36,25 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
-function BookingRow({ booking }: { booking: Booking }) {
-  const { cabins, guests, startDate, endDate, numNights, totalPrice, status } =
-    booking;
-  const [cabin] = Object.values(cabins);
-  const [emailValue, guestNameValue] = Object.values(guests);
-  const cabinName = cabin as string;
-  const email = emailValue as string;
-  const guestName = guestNameValue as string;
+function BookingRow({ booking }: { booking: BookingType }) {
+  const {
+    cabinId: cabinsInfo,
+    guestId: guestsInfo,
+    startDate,
+    endDate,
+    numberOfNights,
+    totalPrice,
+    status,
+  } = booking;
+  const cabinName = cabinsInfo.name;
+  const guestName = guestsInfo.fullName;
+  const email = guestsInfo.email;
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
+    confirmed: "green",
+    canceled: "red",
   };
 
   return (
@@ -64,7 +71,7 @@ function BookingRow({ booking }: { booking: Booking }) {
           {isToday(new Date(startDate))
             ? "Today"
             : formatDistanceFromNow(startDate)}{" "}
-          &rarr; {numNights} night stay
+          &rarr; {numberOfNights} night stay
         </span>
         <span>
           {format(new Date(startDate), "MMM dd yyyy")} &mdash;{" "}

@@ -2,8 +2,13 @@ import { CabinFormType, CabinType, EditCabinFormType } from "../types/types";
 import api, { errorHandler } from "../AxiosSetup/axiosSetUp";
 import { removeFields } from "../utils/helpers";
 
-const getAllCabins = async () => {
-  const res = await api.get("/cabins");
+const getAllCabinsByQuery = async (query: string) => {
+  if (!query) {
+    const res = await api.get(`/cabins`);
+    return res.data.cabins as CabinType[];
+  }
+  if (query.startsWith("&")) query = query.slice(1);
+  const res = await api.get(`/cabins?${query}`);
   return res.data.cabins as CabinType[];
 };
 
@@ -32,4 +37,4 @@ const editOneCabin = async (cabin: EditCabinFormType) => {
 export const updateCabinData = errorHandler(editOneCabin);
 export const createCabin = errorHandler(createOneCabin);
 export const deleteCabin = errorHandler<void, [string]>(deleteOneCabin);
-export const getCabins = errorHandler(getAllCabins);
+export const getCabinsByQuery = errorHandler(getAllCabinsByQuery);
