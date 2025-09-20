@@ -7,7 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-data
+# Dependency directories
 node_modules
 dist
 dist-ssr
@@ -24,3 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Ignore data directory
+data/
