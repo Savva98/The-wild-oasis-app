@@ -11,7 +11,7 @@ async function refreshAccessToken() {
       localStorage.setItem("refreshToken", response.data.refreshToken);
     }
   } catch (error) {
-    console.error("Error refreshing CSRF token:", error);
+    console.error("Error refreshing token:", error);
     throw error;
   }
 }

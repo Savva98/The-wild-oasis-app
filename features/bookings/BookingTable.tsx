@@ -5,9 +5,17 @@ import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Empty from "../../ui/Empty";
 import { BookingType } from "../../types/types";
+import { useSearchParams } from "react-router";
+import { sortingQuery } from "../../utils/helpers";
 
 function BookingTable() {
-  const { data: bookings, isLoading } = useGetAllBookings();
+  const [searchParams] = useSearchParams();
+  const filterValue = searchParams.get("status") || "all";
+  const sortBy = sortingQuery(searchParams.get("sortBy") || "");
+  const query = `${filterValue !== "all" ? `status=${filterValue}` : ""}${
+    sortBy ? `&sort=${sortBy}` : ""
+  }`;
+  const { data: bookings, isLoading } = useGetAllBookings("bookings", query);
   if (isLoading) {
     return <div>Loading...</div>;
   }

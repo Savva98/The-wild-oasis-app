@@ -5,16 +5,6 @@ import axios from "axios";
 
 const api = import.meta.env.VITE_API_URL;
 
-async function getAllBookings() {
-  const res = await axios(api + "/bookings", {
-    method: "GET",
-  });
-  if (res.data.status === "success") {
-    return res.data.bookings as BookingType[];
-  }
-  throw new Error("Bookings could not get loaded");
-}
-
 export async function getBooking(id: string) {
   try {
     const res = await axios(api + "/bookings/" + id, {
@@ -56,9 +46,7 @@ async function getStaysAfterDate(date: Date) {
   }
   throw new Error("Bookings could not get loaded");
 }
-export const getBookings = errorHandler(getAllBookings);
 export const getStays = errorHandler(getStaysAfterDate);
-
 
 // export async function updateBooking(id, obj) {
 //   const { data, error } = await supabase

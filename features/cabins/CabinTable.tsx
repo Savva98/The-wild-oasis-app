@@ -17,8 +17,10 @@ function CabinTable() {
   const query = `${filterValue !== "all" ? `discount=${filterValue}` : ""}${
     sortBy ? `&sort=${sortBy}` : ""
   }`;
-  const { data: cabinsByQuery, isLoading: isLoadingByQuery } =
-    useCabinsByQuery(query);
+  const { data: cabinsByQuery, isLoading: isLoadingByQuery } = useCabinsByQuery(
+    "cabins",
+    query
+  );
   if (isLoadingByQuery) {
     return <Spinner />;
   }

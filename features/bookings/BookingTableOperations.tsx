@@ -11,6 +11,7 @@ function BookingTableOperations() {
         options={[
           { value: "all", label: "All" },
           { value: "checked-out", label: "Checked out" },
+          { value: "confirmed", label: "Confirmed" },
           { value: "checked-in", label: "Checked in" },
           { value: "unconfirmed", label: "Unconfirmed" },
         ]}

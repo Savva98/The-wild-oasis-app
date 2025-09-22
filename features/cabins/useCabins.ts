@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { getCabinsByQuery } from "../../services/apiCabins";
+import { getData } from "../../services/generalApiCalls";
+import { CabinType } from "../../types/types";
 
-function useCabinsByQuery(query: string) {
+function useCabinsByQuery(endpoint: string, query: string) {
   const { data, error, isLoading } = useQuery({
     queryKey: ["cabins", query],
-    queryFn: () => getCabinsByQuery(query),
+    queryFn: () => getData<CabinType>(endpoint, query),
     refetchOnWindowFocus: false,
     retry: false,
   });
