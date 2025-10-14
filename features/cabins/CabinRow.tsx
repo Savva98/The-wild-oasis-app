@@ -31,6 +31,8 @@ const Img = styled.img`
   object-position: center;
   transform: scale(1.5) translateX(-7px);
   margin-left: 10px;
+  border-radius: 0.8rem;
+  margin-bottom: 4px;
 `;
 
 const Cabin = styled.div`

@@ -50,7 +50,6 @@ export const sortingQuery = function (sortBy: string) {
   } else if (sortBy.includes("asc")) {
     const [column] = sortBy.split("-");
     return column;
-  } else {
-    return null;
   }
+  return "";
 };

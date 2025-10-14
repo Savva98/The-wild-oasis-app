@@ -3,9 +3,9 @@ import Select from "./Select";
 
 function SortBy({ options }: { options: { value: string; label: string }[] }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const sortBy = searchParams.get("sortBy") || "";
+  const sortBy = searchParams.get("sort") || "";
   function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    searchParams.set("sortBy", event.target.value);
+    searchParams.set("sort", event.target.value);
     setSearchParams(searchParams);
   }
   return (

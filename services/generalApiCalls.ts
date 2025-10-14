@@ -7,7 +7,7 @@ const api = import.meta.env.VITE_API_URL;
  * @template T - The type of the returned data array.
  * @param {string} endpoint - The API endpoint to fetch data from.
  * @param {string} [query] - Optional query string to filter results.
- * @returns {Promise<T[]>} - A promise that resolves to an array of data of type T.
+ * @returns {Promise<{data: T[], totalDocuments:number}>} - A promise that resolves to an object with array of data of type T and totalDocuments of type number.
  * @throws {Error} - Throws an error if the API response status is not "success".
  */
 async function getDataByQuery<T>(endpoint: string, query?: string) {
@@ -16,7 +16,10 @@ async function getDataByQuery<T>(endpoint: string, query?: string) {
       method: "GET",
     });
     if (res.data.status === "success") {
-      return res.data[endpoint] as T[];
+      return {
+        data: res.data[endpoint] as T[],
+        totalDocuments: res.data.totalDocuments as number,
+      };
     }
     throw new Error(
       `${
@@ -30,7 +33,10 @@ async function getDataByQuery<T>(endpoint: string, query?: string) {
       method: "GET",
     });
     if (res.data.status === "success") {
-      return res.data[endpoint] as T[];
+      return {
+        data: res.data[endpoint] as T[],
+        totalDocuments: res.data.totalDocuments as number,
+      };
     }
     throw new Error(
       `${
@@ -38,7 +44,22 @@ async function getDataByQuery<T>(endpoint: string, query?: string) {
       } could not get loaded`
     );
   }
-  return [] as T[];
+  return { data: [] as T[], totalDocuments: 0 };
+}
+
+async function getDataById<T>(endpoint: string, id: string) {
+  const res = await axios(api + `/${endpoint}/` + id, {
+    method: "GET",
+  });
+  if (res.data.status === "success") {
+    return res.data[endpoint] as T;
+  }
+  throw new Error(
+    `${
+      endpoint.slice(0).toUpperCase() + endpoint.slice(1)
+    } could not get loaded`
+  );
 }
 
 export const getData = errorHandler(getDataByQuery);
+export const getDatabyId = errorHandler(getDataById);

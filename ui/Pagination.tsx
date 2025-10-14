@@ -1,3 +1,6 @@
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { useSearchParams } from "react-router";
+import { RESULTS_PER_PAGE } from "../utils/consts";
 import styled from "styled-components";
 
 const StyledPagination = styled.div`
@@ -21,7 +24,9 @@ const Buttons = styled.div`
   gap: 0.6rem;
 `;
 
-const PaginationButton = styled.button<{ active: boolean }>`
+const PaginationButton = styled("button").withConfig({
+  shouldForwardProp: (prop) => !["active"].includes(prop),
+})<{ active?: boolean }>`
   background-color: ${(props) =>
     props.active ? " var(--color-brand-600)" : "var(--color-grey-50)"};
   color: ${(props) => (props.active ? " var(--color-brand-50)" : "inherit")};
@@ -55,3 +60,49 @@ const PaginationButton = styled.button<{ active: boolean }>`
     color: var(--color-brand-50);
   }
 `;
+
+function Pagination({ results }: { results: number }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const status = searchParams.get("status");
+  const totalPages = Math.ceil(results / RESULTS_PER_PAGE);
+  function setPage(page: number) {
+    if (!status) {
+      searchParams.set("status", "all");
+    }
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  }
+  function handleNext() {
+    const next = page === totalPages ? page : page + 1;
+    setPage(next);
+  }
+  function handlePrevious() {
+    const previous = page === 1 ? page : page - 1;
+    setPage(previous);
+  }
+
+  if (totalPages <= 1) return null;
+
+  return (
+    <StyledPagination>
+      <P>
+        Showing <span>{(page - 1) * RESULTS_PER_PAGE + 1}</span> to{" "}
+        <span>{page === totalPages ? results : RESULTS_PER_PAGE * page}</span>{" "}
+        of <span>{results} </span>
+        results
+      </P>
+      <Buttons>
+        <PaginationButton disabled={page === 1} onClick={handlePrevious}>
+          <HiChevronLeft /> <span>Previous</span>
+        </PaginationButton>
+        <PaginationButton disabled={page === totalPages} onClick={handleNext}>
+          <span>Next</span>
+          <HiChevronRight />
+        </PaginationButton>
+      </Buttons>
+    </StyledPagination>
+  );
+}
+
+export default Pagination;

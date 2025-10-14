@@ -5,17 +5,12 @@ import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Empty from "../../ui/Empty";
 import { BookingType } from "../../types/types";
-import { useSearchParams } from "react-router";
-import { sortingQuery } from "../../utils/helpers";
+import Pagination from "../../ui/Pagination";
 
 function BookingTable() {
-  const [searchParams] = useSearchParams();
-  const filterValue = searchParams.get("status") || "all";
-  const sortBy = sortingQuery(searchParams.get("sortBy") || "");
-  const query = `${filterValue !== "all" ? `status=${filterValue}` : ""}${
-    sortBy ? `&sort=${sortBy}` : ""
-  }`;
-  const { data: bookings, isLoading } = useGetAllBookings("bookings", query);
+  const { data, isLoading } = useGetAllBookings();
+  const { data: bookings, totalDocuments } = data || {};
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -41,6 +36,9 @@ function BookingTable() {
             <BookingRow key={booking.id} booking={booking} />
           )}
         />
+        <Table.Footer>
+          <Pagination results={totalDocuments || 0} />
+        </Table.Footer>
       </Table>
     </Menus>
   );
