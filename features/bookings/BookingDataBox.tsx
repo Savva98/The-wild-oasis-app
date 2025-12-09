@@ -6,13 +6,14 @@ import {
   HiOutlineCheckCircle,
   HiOutlineCurrencyDollar,
   HiOutlineHomeModern,
+  HiOutlineExclamationCircle,
 } from "react-icons/hi2";
 
 import DataItem from "../../ui/DataItem";
 import { Flag } from "../../ui/Flag";
 
 import { formatDistanceFromNow, formatCurrency } from "../../utils/helpers";
-import { BookingTypeExpanded } from "../../types/types";
+import { BookingType } from "../../types/types";
 
 const StyledBookingDataBox = styled.section`
   /* Box */
@@ -70,7 +71,9 @@ const Guest = styled.div`
   }
 `;
 
-const Price = styled.div<{ isPaid: boolean }>`
+const Price = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isPaid",
+})<{ isPaid: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -96,6 +99,26 @@ const Price = styled.div<{ isPaid: boolean }>`
   }
 `;
 
+const Cancelled = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.6rem 3.2rem;
+  border-radius: var(--border-radius-sm);
+  margin-top: 2.4rem;
+  justify-content: center;
+  height: 6rem;
+
+  background-color: var(--color-red-200);
+  color: var(--color-red-700);
+
+  & p {
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+`;
+
 const Footer = styled.footer`
   padding: 1.6rem 4rem;
   font-size: 1.2rem;
@@ -104,27 +127,27 @@ const Footer = styled.footer`
 `;
 
 // A purely presentational component
-function BookingDataBox({ booking }: { booking: BookingTypeExpanded }) {
+function BookingDataBox({ booking }: { booking: BookingType }) {
   const {
     created_at,
     startDate,
     endDate,
-    numNights,
+    numberOfNights: numNights,
     numGuests,
-    cabinPrice,
-    extrasPrice,
+    extraPrice,
     totalPrice,
     hasBreakfast,
     observations,
+    status,
     isPaid,
-    guests: {
+    guestId: {
       fullName: guestName,
       email,
       nationality,
       countryFlag,
       nationalID,
     },
-    cabins: { name: cabinName },
+    cabinId: { name: cabinName, regularPrice: cabinPrice, discount },
   } = booking;
 
   return (
@@ -173,18 +196,26 @@ function BookingDataBox({ booking }: { booking: BookingTypeExpanded }) {
           {hasBreakfast ? "Yes" : "No"}
         </DataItem>
 
-        <Price isPaid={isPaid}>
-          <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
-            {formatCurrency(totalPrice)}
+        {status === "canceled" ? (
+          <Cancelled>
+            <HiOutlineExclamationCircle />
+            <p>Booking canceled</p>
+          </Cancelled>
+        ) : (
+          <Price isPaid={isPaid ? true : false}>
+            <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
+              {formatCurrency(totalPrice)}
 
-            {hasBreakfast &&
-              ` (${formatCurrency(cabinPrice)} cabin + ${formatCurrency(
-                extrasPrice
-              )} breakfast)`}
-          </DataItem>
-
-          <p>{isPaid ? "Paid" : "Will pay at property"}</p>
-        </Price>
+              {hasBreakfast &&
+                ` (${formatCurrency(
+                  cabinPrice - (discount ? discount : 0)
+                )} cabin + ${formatCurrency(
+                  extraPrice
+                )} breakfast for evry day of the stay)`}
+            </DataItem>
+            <p>{isPaid ? "Paid" : "Will pay at property"}</p>
+          </Price>
+        )}
       </Section>
 
       <Footer>

@@ -47,6 +47,16 @@ function Filter({
   const [searchParams, setSearchParams] = useSearchParams();
   const currentFilter = searchParams.get(filterField) || options[0].value;
   const page = searchParams.get("page");
+  const direction = searchParams.get("direction");
+  if (
+    page === "1" &&
+    filterField === "status" &&
+    currentFilter == "all" &&
+    direction
+  ) {
+    searchParams.delete("direction");
+    setSearchParams(searchParams);
+  }
   function handleFilterClick(filter: string) {
     searchParams.set(filterField, filter);
     if (
@@ -56,6 +66,9 @@ function Filter({
       page !== "1"
     ) {
       searchParams.set("page", "1");
+    }
+    if (direction) {
+      searchParams.delete("direction");
     }
     setSearchParams(searchParams);
   }

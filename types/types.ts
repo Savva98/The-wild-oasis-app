@@ -1,22 +1,6 @@
 import { AxiosError } from "axios";
 import { FieldError } from "react-hook-form";
 
-// export type BookingTypeExpanded = {
-//   cabinPrice: number;
-//   extrasPrice: number;
-//   hasBreakfast: boolean;
-//   observations: string;
-//   isPaid: boolean;
-//   guests: {
-//     fullName: string;
-//     email: string;
-//     nationality: string;
-//     countryFlag: string;
-//     nationalID: string;
-//   };
-//   cabins: { name: string };
-// } & Omit<Booking, "guests" | "cabins">;
-
 export type CabinType = {
   id: string;
   name: string;
@@ -85,16 +69,20 @@ export type BookingType = {
   endDate: Date;
   numberOfNights: number;
   totalPrice: number;
+  extraPrice: number;
   guestId: {
     _id: string;
     fullName: string;
     email: string;
     nationality: string;
     countryFlag: string;
+    nationalID: string;
   };
   cabinId: {
     _id: string;
     name: string;
+    regularPrice: number;
+    discount: number;
   };
   hasBreakfast?: boolean;
   observations?: string;
@@ -106,4 +94,8 @@ export type BookingType = {
     | "checked-in"
     | "checked-out"
     | "canceled";
+};
+
+export type ApiError = {
+  message: string;
 };

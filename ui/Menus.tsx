@@ -100,21 +100,21 @@ function Toggle({ id }: { id: string }) {
     useContext(MenuContext) || {};
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
+    if (isOpen === "" || isOpen !== id) onOpen?.(id);
+    if (isOpen === id) {
+      onClose?.();
+      return;
+    }
     if (e.target instanceof Element) {
       const rect = e.target.closest("button")?.getBoundingClientRect();
       setPosition?.(
         rect
           ? {
-              x: window.innerWidth - rect.width * 3 - rect.x,
-              y: rect.height + (rect.bottom - rect.top) + 3,
+              x: window.innerWidth - rect.width * 4.3 - rect.x,
+              y: rect.height + (rect.bottom - rect.top) - 20,
             }
           : null
       );
-    }
-    if (isOpen === "" || isOpen !== id) onOpen?.(id);
-    if (isOpen === id) {
-      onClose?.();
-      return;
     }
   }
   return (
@@ -139,10 +139,12 @@ function Button({
   children,
   icon,
   execute,
+  onClick,
 }: {
   children: React.ReactNode;
   icon: React.ReactNode;
   execute?: string;
+  onClick?: () => void;
 }) {
   const { onOpen } = useContext(ModalContext) || {};
   const { onClose } = useContext(MenuContext) || {};
@@ -153,7 +155,7 @@ function Button({
   }
   return (
     <li>
-      <StyledButton onClick={handleClick}>
+      <StyledButton onClick={onClick ? onClick : handleClick}>
         {icon}
         <span>{children}</span>
       </StyledButton>

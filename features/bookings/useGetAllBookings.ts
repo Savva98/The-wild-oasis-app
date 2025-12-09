@@ -21,6 +21,10 @@ function useGetAllBookings() {
     query = query.replace(sortBy, sort);
   }
 
+  if (!query.includes("status=all") && query.includes("direction=previous")) {
+    query = query.replace("&direction=previous", "");
+  }
+
   const { data, error, isLoading } = useQuery({
     queryKey: ["bookings", query, page],
     queryFn: () => getData<BookingType>("bookings", query),
@@ -29,27 +33,27 @@ function useGetAllBookings() {
   });
   useEffect(() => {
     if (error) {
-      toast.error(error.message);
+      if (!error.message) {
+        toast.error(error as unknown as string);
+      } else {
+        toast.error(error.message);
+      }
     }
   }, [error]);
   // PRE-FETCH
   const totalPages = Math.ceil((data?.totalDocuments ?? 0) / RESULTS_PER_PAGE);
   let prefetchQuery = "";
-  if (page < totalPages) {
+  if (page < totalPages && !query.includes("direction=previous")) {
     prefetchQuery = query.replace(`page=${page}`, `page=${page + 1}`);
+    if (query.includes("direction=previous")) {
+      prefetchQuery = query.replace(`&direction=previous`, "");
+    }
+    console.log(prefetchQuery);
     queryClient.prefetchQuery({
       queryKey: ["bookings", prefetchQuery, page + 1],
       queryFn: () => getData<BookingType>("bookings", prefetchQuery),
     });
   }
-
-  // if (page > 1) {
-  //   prefetchQuery = query.replace(`page=${page}`, `page=${page - 1}`);
-  //   queryClient.prefetchQuery({
-  //     queryKey: ["bookings", prefetchQuery, page - 1],
-  //     queryFn: () => getData<BookingType>("bookings", prefetchQuery),
-  //   });
-  // }
 
   return { data, isLoading };
 }

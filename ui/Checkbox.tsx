@@ -31,14 +31,14 @@ type CheckboxProps = {
   onChange: () => void;
   disabled?: boolean;
   id: string;
-  children: React.ReactNode;
+  text: string;
 };
 function Checkbox({
   checked,
   onChange,
   disabled = false,
   id,
-  children,
+  text,
 }: CheckboxProps) {
   return (
     <StyledCheckbox>
@@ -49,7 +49,7 @@ function Checkbox({
         onChange={onChange}
         disabled={disabled}
       />
-      <label htmlFor={!disabled ? id : ""}>{children}</label>
+      <label htmlFor={!disabled ? id : ""}>{text}</label>
     </StyledCheckbox>
   );
 }

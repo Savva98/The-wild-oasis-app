@@ -1,10 +1,12 @@
 import axios from "axios";
 import { ErrorType } from "../types/types";
+import { setUpInterceptors } from "./interceptors/interceptors";
 const url = import.meta.env.VITE_API_URL as string;
 const api = axios.create({
   baseURL: url,
   withCredentials: true,
 });
+setUpInterceptors(api);
 
 export const errorHandler = <T, A extends unknown[]>(
   fn: (...args: A) => Promise<T>

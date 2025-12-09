@@ -61,9 +61,20 @@ const PaginationButton = styled("button").withConfig({
   }
 `;
 
-function Pagination({ results }: { results: number }) {
+function Pagination({
+  results,
+  hasMore,
+}: {
+  results: number;
+  hasMore: boolean;
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1", 10);
+  const cursor = localStorage.getItem("nextCursor");
+  if (isNaN(page) || page < 1) {
+    searchParams.set("page", "1");
+    setSearchParams(searchParams);
+  }
   const status = searchParams.get("status");
   const totalPages = Math.ceil(results / RESULTS_PER_PAGE);
   function setPage(page: number) {
@@ -74,11 +85,19 @@ function Pagination({ results }: { results: number }) {
     setSearchParams(searchParams);
   }
   function handleNext() {
+    if (!hasMore) return;
+    if (searchParams.get("direction") === "previous") {
+      searchParams.delete("direction");
+    }
     const next = page === totalPages ? page : page + 1;
     setPage(next);
   }
   function handlePrevious() {
     const previous = page === 1 ? page : page - 1;
+    searchParams.set("direction", "previous");
+    if (page - 1 === 1 && status === "all") {
+      searchParams.delete("direction");
+    }
     setPage(previous);
   }
 
@@ -96,7 +115,7 @@ function Pagination({ results }: { results: number }) {
         <PaginationButton disabled={page === 1} onClick={handlePrevious}>
           <HiChevronLeft /> <span>Previous</span>
         </PaginationButton>
-        <PaginationButton disabled={page === totalPages} onClick={handleNext}>
+        <PaginationButton disabled={!hasMore} onClick={handleNext}>
           <span>Next</span>
           <HiChevronRight />
         </PaginationButton>

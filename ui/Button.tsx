@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { ButtonCssType } from "../types/CssTypes";
 
 const sizes = {
   small: css`
@@ -50,16 +51,10 @@ const variations = {
 
 const Button = styled("button").withConfig({
   shouldForwardProp: (prop) => !["size", "variant"].includes(prop),
-})<{
-  size?: keyof typeof sizes;
-  variant?: keyof typeof variations;
-}>`
+})<ButtonCssType>`
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
-  &:hover {
-    background-color: var(--color-brand-700);
-  }
   ${(props) => props.size && sizes[props.size]}
   ${(props) => props.variant && variations[props.variant]}
 `;

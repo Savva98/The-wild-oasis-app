@@ -7,8 +7,11 @@ import Heading from "../../ui/Heading";
 import ButtonGroup from "../../ui/ButtonGroup";
 import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
+import Checkbox from "../../ui/Checkbox";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { useGetBookingById } from "../bookings/useGetBookingById";
+import Spinner from "../../ui/Spinner";
 
 const Box = styled.div`
   /* Box */
@@ -19,17 +22,30 @@ const Box = styled.div`
 `;
 
 function CheckinBooking() {
+  const [confirmed, setConfirmed] = React.useState(false);
   const moveBack = useMoveBack();
+  const { data: booking, isLoading } = useGetBookingById();
+  if (!booking?.id) {
+    moveBack();
+    return null;
+  }
 
-  const booking = {} as BookingType;
+  if (isLoading) {
+    return <Spinner />;
+  }
+  if (confirmed !== booking?.isPaid) {
+    setConfirmed(booking?.isPaid ?? false);
+  }
+  console.log(booking.isPaid);
 
   const {
     id: bookingId,
-    guests,
     totalPrice,
-    numGuests,
-    hasBreakfast,
-    numNights,
+    // numGuests,
+    // hasBreakfast,
+    // numberOfNights,
+    cabinId: { name },
+    guestId: { fullName },
   } = booking;
 
   function handleCheckin() {}
@@ -37,15 +53,24 @@ function CheckinBooking() {
   return (
     <>
       <Row type="horizontal">
-        <Heading as="h1">Check in booking #{bookingId}</Heading>
+        <Heading as="h1">Check in booking for Cabin #{name}</Heading>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </Row>
 
       <BookingDataBox booking={booking} />
-
+      <Box>
+        <Checkbox
+          text={`I confirm that ${fullName} has paid total amount: ${totalPrice}$`}
+          id={bookingId}
+          checked={confirmed}
+          onChange={() => setConfirmed(!confirmed)}
+        />
+      </Box>
       <ButtonGroup>
-        <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
-        <Button variation="secondary" onClick={moveBack}>
+        <Button onClick={handleCheckin} variant="primary" size="medium">
+          Check in booking for Cabin #{name}
+        </Button>
+        <Button variant="secondary" onClick={moveBack} size="medium">
           Back
         </Button>
       </ButtonGroup>

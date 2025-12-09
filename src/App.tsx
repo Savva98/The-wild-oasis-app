@@ -4,8 +4,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import Dashboard from "../pages/Dashboard";
 import Bookings from "../pages/Bookings";
+import Booking from "../pages/Booking";
 import Cabins from "../pages/Cabins";
 import Users from "../pages/Users";
+import Checkin from "../pages/Checkin";
 import Forbiden from "../pages/Forbiden";
 import Settings from "../pages/Settings";
 import Account from "../pages/Account";
@@ -37,6 +39,8 @@ function App() {
             <Route index element={<Navigate replace to="dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="bookings" element={<Bookings />} />
+            <Route path="bookings/:bookingId" element={<Booking />} />
+            <Route path="checkin/:bookingId" element={<Checkin />} />
             <Route path="cabins" element={<Cabins />} />
             <Route path="settings" element={<Settings />} />
             <Route path="account" element={<Account />} />

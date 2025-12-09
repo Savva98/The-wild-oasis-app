@@ -23,7 +23,9 @@ import { HiPencil, HiTrash } from "react-icons/hi2";
 //   }
 // `;
 
-const Img = styled.img`
+const Img = styled.img.withConfig({
+  shouldForwardProp: (prop) => prop !== "url",
+})<{ url: string }>`
   display: block;
   width: 6.4rem;
   aspect-ratio: 3 / 2;
@@ -33,6 +35,9 @@ const Img = styled.img`
   margin-left: 10px;
   border-radius: 0.8rem;
   margin-bottom: 4px;
+  background-image: url(${(props) => props.url});
+  background-repeat: no-repeat;
+  background-size: cover;
 `;
 
 const Cabin = styled.div`
@@ -57,7 +62,22 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
   const { name, maxCapacity, regularPrice, discount, image, id } = cabin;
   return (
     <Table.Row id={id}>
-      <Img src={`/img/cabins/${image}`} alt={name} />
+      <picture>
+        {/* <source
+          srcSet={`/img/cabins/${image.split(".")[0]}.avif`}
+          type="image/avif"
+        />
+        <source
+          srcSet={`/img/cabins/${image.split(".")[0]}.webp`}
+          type="image/webp"
+        /> */}
+        <Img
+          src={`/img/cabins/${image}`}
+          alt={name}
+          loading="lazy"
+          url={`/img/cabins/${image}`}
+        />
+      </picture>
       <Cabin>{name}</Cabin>
       <div>Fits up to {maxCapacity} guests</div>
       <Price>{formatCurrency(regularPrice)}</Price>

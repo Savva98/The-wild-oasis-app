@@ -9,8 +9,7 @@ import Pagination from "../../ui/Pagination";
 
 function BookingTable() {
   const { data, isLoading } = useGetAllBookings();
-  const { data: bookings, totalDocuments } = data || {};
-
+  const { data: bookings, totalDocuments, hasMore } = data || {};
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -37,7 +36,7 @@ function BookingTable() {
           )}
         />
         <Table.Footer>
-          <Pagination results={totalDocuments || 0} />
+          <Pagination results={totalDocuments || 0} hasMore={hasMore!} />
         </Table.Footer>
       </Table>
     </Menus>

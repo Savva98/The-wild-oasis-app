@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "../../ui/Button";
-import Form from "../../ui/Form";
+import { Form } from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 

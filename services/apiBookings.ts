@@ -10,7 +10,6 @@ export async function getBooking(id: string) {
     const res = await axios(api + "/bookings/" + id, {
       method: "GET",
     });
-    console.log(res.data);
     if (res.data.status === "success") {
       console.log(res.data);
     }
