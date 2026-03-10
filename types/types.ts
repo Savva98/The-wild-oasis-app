@@ -88,14 +88,18 @@ export type BookingType = {
   observations?: string;
   isPaid?: boolean;
   numGuests: number;
-  status:
-    | "unconfirmed"
-    | "confirmed"
-    | "checked-in"
-    | "checked-out"
-    | "canceled";
+  status: "unconfirmed" | "checked-in" | "checked-out" | "cancelled";
 };
 
 export type ApiError = {
   message: string;
+  data?: { message: string; status: string; error: { statusCode: number } };
+};
+
+export type UserDataType = {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: string;
+  isMfActive: boolean;
 };

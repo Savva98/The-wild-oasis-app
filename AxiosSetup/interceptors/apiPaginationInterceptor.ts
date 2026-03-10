@@ -29,7 +29,8 @@ class SetupPaginationInterceptor {
     const status = params.get("status") || "all";
     const direction = params.get("direction") || "next";
     const pageKey = `${status}-page-${pageNumber}`;
-    const prevPageKey = `${status}-page-${pageNumber - 1}`;
+    const prevPageKey = `${status}-page-${pageNumber}`;
+
     if (pageNumber === 1) {
       this.clearHistory(status);
       return config;
@@ -39,6 +40,7 @@ class SetupPaginationInterceptor {
       storedCursor = this.cursorsByPage.get(pageKey);
     } else if (direction === "previous") {
       storedCursor = this.previousCursorsByPage.get(prevPageKey);
+      console.log(storedCursor);
     }
     if (storedCursor) {
       config.params = {
@@ -50,22 +52,25 @@ class SetupPaginationInterceptor {
   };
   onFulfilled = (response: AxiosResponse) => {
     const params = new URLSearchParams(response.config.url?.split("?")[1]);
-    const pageNumber = parseInt(params.get("page") || "1");
-    const status = params.get("status");
-    if (response.data?.pagination?.prevCursor) {
-      const { prevCursor } = response.data.pagination;
-      const prevPageKey = `${status}-page-${pageNumber - 1}`;
-      this.previousCursorsByPage.set(prevPageKey, prevCursor);
-    }
-    if (response.data?.pagination?.nextCursor && response.config) {
-      const { nextCursor } = response.data.pagination;
-      const nextPageKey = `${status}-page-${pageNumber + 1}`;
-      this.cursorsByPage.set(nextPageKey, nextCursor);
+    if (params.size !== 0) {
+      const pageNumber = parseInt(params.get("page") || "1");
+      const status = params.get("status");
+      if (response.data?.pagination?.prevCursor) {
+        const { prevCursor } = response.data.pagination;
+        const prevPageKey = `${status}-page-${pageNumber - 1}`;
+        this.previousCursorsByPage.set(prevPageKey, prevCursor);
+      }
+      if (response.data?.pagination?.nextCursor && response.config) {
+        const { nextCursor } = response.data.pagination;
+        const nextPageKey = `${status}-page-${pageNumber + 1}`;
+        this.cursorsByPage.set(nextPageKey, nextCursor);
+      }
     }
     return response;
   };
   onRejected = (error: AxiosError) => {
-    return Promise.reject(error.message);
+    // Ensure the original error object is propagated
+    return Promise.reject(error);
   };
 }
 

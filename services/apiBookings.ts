@@ -1,30 +1,12 @@
 import { errorHandler } from "../AxiosSetup/axiosSetUp";
 import { BookingType } from "../types/types";
 import { getToday } from "../utils/helpers";
-import axios from "axios";
-
-const api = import.meta.env.VITE_API_URL;
-
-export async function getBooking(id: string) {
-  try {
-    const res = await axios(api + "/bookings/" + id, {
-      method: "GET",
-    });
-    if (res.data.status === "success") {
-      console.log(res.data);
-    }
-  } catch (error) {
-    console.error(error);
-    throw new Error("Booking not found");
-  }
-}
+import api from "../AxiosSetup/axiosSetUp";
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
 export async function getBookingsAfterDate(date: string) {
   try {
-    const res = await axios(api + "/bookings?date=" + date, {
-      method: "GET",
-    });
+    const res = await api.get(`/bookings?dateFrom=${date}`);
     console.log(res.data);
     if (res.data.status === "success") {
       console.log(res.data);
@@ -36,39 +18,31 @@ export async function getBookingsAfterDate(date: string) {
 }
 
 // Returns all STAYS that are were created after the given date
-async function getStaysAfterDate(date: Date) {
-  const res = await axios(api + "/bookings?dateFrom=" + date, {
-    method: "GET",
-  });
-  if (res.data.status === "success") {
-    return res.data.bookings as BookingType[];
-  }
-  throw new Error("Bookings could not get loaded");
+// async function getStaysAfterDate(date: Date) {
+//   const res = await api.get("/bookings?dateFrom=" + date, {
+//     method: "GET",
+//   });
+//   if (res.data.status === "success") {
+//     return res.data.bookings as BookingType[];
+//   }
+//   throw new Error("Bookings could not get loaded");
+// }
+
+async function updateBokingObj(
+  id: string,
+  obj: Partial<BookingType>,
+  route: string,
+) {
+  const res = await api.patch(`/bookings/${route}/${id}`, obj);
+  return res.data as BookingType;
 }
-export const getStays = errorHandler(getStaysAfterDate);
 
-// export async function updateBooking(id, obj) {
-//   const { data, error } = await supabase
-//     .from("bookings")
-//     .update(obj)
-//     .eq("id", id)
-//     .select()
-//     .single();
+async function deleteBookingObj(id: string) {
+  const res = await api.delete(`/bookings/delete/${id}`);
+  return res.data;
+}
 
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Booking could not be updated");
-//   }
-//   return data;
-// }
+export const deleteBooking = errorHandler(deleteBookingObj);
 
-// export async function deleteBooking(id) {
-//   // REMEMBER RLS POLICIES
-//   const { data, error } = await supabase.from("bookings").delete().eq("id", id);
-
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Booking could not be deleted");
-//   }
-//   return data;
-// }
+export const updateBooking = errorHandler(updateBokingObj);
+// export const getStaysAfterCertainDate = errorHandler(getStaysAfterDate);

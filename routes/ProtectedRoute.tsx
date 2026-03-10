@@ -3,23 +3,24 @@ import { useNavigate } from "react-router-dom";
 
 type ProtectedrouteProps = {
   children: React.ReactNode;
-  //   redirectPath: string;
+  userInfo?: { role: string };
 };
-
-function ProtectedRoute({ children }: ProtectedrouteProps) {
+function ProtectedRoute({ children, userInfo }: ProtectedrouteProps) {
   const navigate = useNavigate();
   const isAuthenticated = false; // Replace with actual authentication logic
-  // const allowedRoles = ["admin", "user"]; // Replace with actual roles logic
+  const allowedRoles = ["admin"]; // Replace with actual roles logic
+  const userRole = userInfo?.role;
   useEffect(
     function () {
       if (!isAuthenticated) {
         navigate("/login", { replace: true });
       }
     },
-    [isAuthenticated, navigate]
+    [isAuthenticated, navigate],
   );
   // if (allowedRoles.length > 0 && !allowedRoles.includes(userRole || "")) {
-  //   return <Navigate to="/forbidden" replace />;
+  //   navigate("/forbidden", { replace: true });
+  //   return null;
   // }
   return <>{children}</>;
 }

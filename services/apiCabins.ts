@@ -13,7 +13,7 @@ const getAllCabinsByQuery = async (query: string) => {
 };
 
 const deleteOneCabin = async (id: string) => {
-  await api.post(`/cabins/${id}`);
+  await api.delete(`/cabins/${id}`);
 };
 
 async function createOneCabin(cabin: CabinFormType) {

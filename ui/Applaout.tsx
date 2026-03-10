@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { Outlet } from "react-router";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import useAuthStore from "../Store/zustandAuthStore";
+import { useEffect } from "react";
 
 const StyledAppLayout = styled.div`
   display: grid;
@@ -26,6 +28,17 @@ const Conteiner = styled.div`
 `;
 
 function Applaout() {
+  const isAuthenticated = localStorage.getItem("authenticated") === "true";
+  const rehydrateAuth = useAuthStore((state) => state.rehydrate);
+  useEffect(() => {
+    const rehydrate = async () => {
+      if (isAuthenticated) {
+        await rehydrateAuth();
+      }
+    };
+    rehydrate();
+  }, [isAuthenticated, rehydrateAuth]);
+
   return (
     <StyledAppLayout>
       <Header />

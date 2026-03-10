@@ -56,7 +56,7 @@ const Button = styled("button").withConfig({
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
   ${(props) => props.size && sizes[props.size]}
-  ${(props) => props.variant && variations[props.variant]}
+  ${(props) => (props.variant ? variations[props.variant] : variations.primary)}
 `;
 
 export default Button;

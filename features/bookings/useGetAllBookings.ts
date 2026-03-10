@@ -9,7 +9,7 @@ import { RESULTS_PER_PAGE } from "../../utils/consts";
 
 function useGetAllBookings() {
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sort");
   const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
   let query = searchParams.toString();
@@ -22,6 +22,8 @@ function useGetAllBookings() {
   }
 
   if (!query.includes("status=all") && query.includes("direction=previous")) {
+    searchParams.delete("direction");
+    setSearchParams(searchParams);
     query = query.replace("&direction=previous", "");
   }
 
@@ -32,6 +34,7 @@ function useGetAllBookings() {
     retry: false,
   });
   useEffect(() => {
+    console.log(error);
     if (error) {
       if (!error.message) {
         toast.error(error as unknown as string);
@@ -48,7 +51,6 @@ function useGetAllBookings() {
     if (query.includes("direction=previous")) {
       prefetchQuery = query.replace(`&direction=previous`, "");
     }
-    console.log(prefetchQuery);
     queryClient.prefetchQuery({
       queryKey: ["bookings", prefetchQuery, page + 1],
       queryFn: () => getData<BookingType>("bookings", prefetchQuery),

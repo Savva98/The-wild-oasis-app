@@ -127,7 +127,13 @@ const Footer = styled.footer`
 `;
 
 // A purely presentational component
-function BookingDataBox({ booking }: { booking: BookingType }) {
+function BookingDataBox({
+  booking,
+  optionalBreakfastPrice,
+}: {
+  booking: BookingType;
+  optionalBreakfastPrice?: number;
+}) {
   const {
     created_at,
     startDate,
@@ -196,7 +202,7 @@ function BookingDataBox({ booking }: { booking: BookingType }) {
           {hasBreakfast ? "Yes" : "No"}
         </DataItem>
 
-        {status === "canceled" ? (
+        {status === "cancelled" ? (
           <Cancelled>
             <HiOutlineExclamationCircle />
             <p>Booking canceled</p>
@@ -206,12 +212,13 @@ function BookingDataBox({ booking }: { booking: BookingType }) {
             <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
               {formatCurrency(totalPrice)}
 
-              {hasBreakfast &&
-                ` (${formatCurrency(
-                  cabinPrice - (discount ? discount : 0)
-                )} cabin + ${formatCurrency(
-                  extraPrice
-                )} breakfast for evry day of the stay)`}
+              {hasBreakfast || optionalBreakfastPrice
+                ? ` (${formatCurrency(
+                    cabinPrice - (discount ? discount : 0)
+                  )} cabin + ${formatCurrency(
+                    optionalBreakfastPrice || extraPrice
+                  )} breakfast for every day of stay for ${numGuests} guest)`
+                : ""}
             </DataItem>
             <p>{isPaid ? "Paid" : "Will pay at property"}</p>
           </Price>

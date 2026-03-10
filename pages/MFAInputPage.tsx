@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import React from "react";
-import LoginForm from "../features/authentication/LoginForm";
+import MFACodeInput from "../features/authentication/MFACodeInput";
 import Logo from "../ui/Logo";
 import Heading from "../ui/Heading";
 
-const LoginLayout = styled.main`
+const MFALayout = styled.main`
   min-height: 100vh;
   display: grid;
   grid-template-columns: 48rem;
@@ -14,14 +13,14 @@ const LoginLayout = styled.main`
   background-color: var(--color-grey-50);
 `;
 
-function Login() {
+function MFAInputPage() {
   return (
-    <LoginLayout>
+    <MFALayout>
       <Logo />
-      <Heading as="h4">Welcome back! Please login to your account.</Heading>
-      <LoginForm />
-    </LoginLayout>
+      <Heading as="h4">Enter your MFA code from your authenticator app</Heading>
+      <MFACodeInput />
+    </MFALayout>
   );
 }
 
-export default Login;
+export default MFAInputPage;

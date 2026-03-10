@@ -70,7 +70,6 @@ function Pagination({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const cursor = localStorage.getItem("nextCursor");
   if (isNaN(page) || page < 1) {
     searchParams.set("page", "1");
     setSearchParams(searchParams);

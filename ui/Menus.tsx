@@ -1,6 +1,13 @@
 import styled from "styled-components";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { MenusContextType } from "../types/types";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import { createPortal } from "react-dom";
@@ -98,6 +105,15 @@ function Menus({ children }: { children: React.ReactNode }) {
 function Toggle({ id }: { id: string }) {
   const { isOpen, onOpen, onClose, setPosition } =
     useContext(MenuContext) || {};
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  function clickOutsideListener(event: MouseEvent) {
+    if (
+      toggleRef.current &&
+      !toggleRef.current.contains(event.target as Node)
+    ) {
+      onClose?.();
+    }
+  }
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     if (isOpen === "" || isOpen !== id) onOpen?.(id);
@@ -117,8 +133,21 @@ function Toggle({ id }: { id: string }) {
       );
     }
   }
+  useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    document.addEventListener("click", clickOutsideListener, { signal });
+    return () => {
+      controller.abort();
+    };
+  });
   return (
-    <StyledToggle onClick={handleClick} id={id} aria-expanded={isOpen === id}>
+    <StyledToggle
+      onClick={handleClick}
+      id={id}
+      aria-expanded={isOpen === id}
+      ref={toggleRef}
+    >
       <HiEllipsisVertical />
     </StyledToggle>
   );
@@ -140,11 +169,13 @@ function Button({
   icon,
   execute,
   onClick,
+  disable,
 }: {
   children: React.ReactNode;
   icon: React.ReactNode;
   execute?: string;
   onClick?: () => void;
+  disable?: boolean;
 }) {
   const { onOpen } = useContext(ModalContext) || {};
   const { onClose } = useContext(MenuContext) || {};
@@ -155,7 +186,10 @@ function Button({
   }
   return (
     <li>
-      <StyledButton onClick={onClick ? onClick : handleClick}>
+      <StyledButton
+        onClick={onClick ? onClick : handleClick}
+        disabled={disable}
+      >
         {icon}
         <span>{children}</span>
       </StyledButton>

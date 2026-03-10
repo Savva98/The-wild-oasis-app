@@ -20,10 +20,12 @@ type dataType<T> = {
  */
 async function getDataByQuery<T>(
   endpoint: string,
-  query?: string
+  query?: string,
 ): Promise<dataType<T>> {
   if (!query) {
+    console.log(api.getUri() + `/${endpoint}`);
     const res = await api.get(api.getUri() + `/${endpoint}`);
+    console.log(res);
     if (res.data.status === "success") {
       return {
         data: res.data[endpoint],
@@ -35,12 +37,12 @@ async function getDataByQuery<T>(
     throw new Error(
       `${
         endpoint.slice(0).toUpperCase() + endpoint.slice(1)
-      } could not get loaded`
+      } could not get loaded`,
     );
   }
   if (query) {
+    console.log(query);
     const res = await api.get(api.getUri() + `/${endpoint}?` + query);
-    console.log(res.data);
     if (res.data.status === "success") {
       return {
         data: res.data[endpoint],
@@ -52,7 +54,7 @@ async function getDataByQuery<T>(
     throw new Error(
       `${
         endpoint.slice(0).toUpperCase() + endpoint.slice(1)
-      } could not get loaded`
+      } could not get loaded`,
     );
   }
   return { data: [] as T[], totalDocuments: 0, pagination: {}, hasMore: false };
@@ -60,16 +62,13 @@ async function getDataByQuery<T>(
 
 async function getDataById<T>(endpoint: string, id?: string) {
   if (!id) return {} as T;
-  const res = await api.get(api.getUri() + `/${endpoint}/` + id);
-  if (!res.data) {
-    throw new Error(
-      `${
-        endpoint.slice(0).toUpperCase() + endpoint.slice(1)
-      } could not get loaded`
-    );
+  let dataName = endpoint;
+  if (endpoint.includes("checkin")) {
+    dataName = "bookings";
   }
+  const res = await api.get(api.getUri() + `/${endpoint}/` + id);
   if (res.data.status === "success") {
-    return res.data[endpoint] as T;
+    return res.data[dataName] as T;
   }
   return res.data as T;
 }

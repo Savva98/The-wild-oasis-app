@@ -7,6 +7,7 @@ import { Modal } from "../../ui/Modal";
 // import ButtonEditCabin from "../../ui/ButtonEditCabin";
 // import ButtonDeletCabin from "../../ui/ButtonDeletCabin";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+import useDeleteMutate from "./useDeleteCabin";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import { HiPencil, HiTrash } from "react-icons/hi2";
@@ -60,17 +61,14 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }: { cabin: CabinType }) {
   const { name, maxCapacity, regularPrice, discount, image, id } = cabin;
+  const { mutate: deleteCabin } = useDeleteMutate();
+  const handleDelete = () => {
+    deleteCabin(id);
+  };
+
   return (
     <Table.Row id={id}>
       <picture>
-        {/* <source
-          srcSet={`/img/cabins/${image.split(".")[0]}.avif`}
-          type="image/avif"
-        />
-        <source
-          srcSet={`/img/cabins/${image.split(".")[0]}.webp`}
-          type="image/webp"
-        /> */}
         <Img
           src={`/img/cabins/${image}`}
           alt={name}
@@ -99,7 +97,11 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
           </Menus.Menu>
           <EditCabinData cabin={cabin} />
           <Modal.Content name="deleteCabin">
-            <ConfirmDelete id={id} resourceName={name} />
+            <ConfirmDelete
+              resourceName={name}
+              resourceType="cabin"
+              handleFunction={handleDelete}
+            />
           </Modal.Content>
         </Modal>
       </div>

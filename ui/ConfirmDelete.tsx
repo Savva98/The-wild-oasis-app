@@ -2,8 +2,6 @@ import styled from "styled-components";
 import React, { useContext } from "react";
 import Button from "./Button";
 import Heading from "./Heading";
-import useDeleteCabin from "../features/cabins/useDeleteCabin";
-import Spinner from "./Spinner";
 import { ModalContext } from "./Modal";
 
 const StyledConfirmDelete = styled.div`
@@ -15,6 +13,12 @@ const StyledConfirmDelete = styled.div`
   & p {
     color: var(--color-grey-500);
     margin-bottom: 1.2rem;
+
+    & span {
+      margin: 0;
+      font-weight: 600;
+      color: var(--color-grey-700);
+    }
   }
 
   & div {
@@ -26,17 +30,21 @@ const StyledConfirmDelete = styled.div`
 
 type ConfirmDelete = {
   resourceName: string;
-  id: string;
+  resourceType: string;
+  handleFunction?: () => void;
 };
 
-function ConfirmDelete({ resourceName, id }: ConfirmDelete) {
-  const mutationCabins = useDeleteCabin();
+function ConfirmDelete({
+  resourceName,
+  resourceType,
+  handleFunction,
+}: ConfirmDelete) {
   const { onClose, isOpen } = useContext(ModalContext) || {};
-  if (mutationCabins.isPending) {
-    return <Spinner />;
-  }
   const handleDelete = () => {
-    mutationCabins.mutate(id);
+    if (handleFunction) {
+      handleFunction();
+    }
+    onClose?.();
   };
   if (typeof isOpen === "boolean") {
     return null;
@@ -45,23 +53,15 @@ function ConfirmDelete({ resourceName, id }: ConfirmDelete) {
     <StyledConfirmDelete>
       <Heading as="h3">Delete {resourceName}</Heading>
       <p>
-        Are you sure you want to delete cabin: {resourceName} permanently? This
-        action cannot be undone.
+        Are you sure you want to delete {resourceType}:{" "}
+        <span>{resourceName}</span> permanently? This action cannot be undone.
       </p>
 
       <div>
-        <Button
-          variant="secondary"
-          disabled={mutationCabins.isPending}
-          onClick={onClose}
-        >
+        <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <Button
-          variant="danger"
-          disabled={mutationCabins.isPending}
-          onClick={handleDelete}
-        >
+        <Button variant="danger" onClick={handleDelete}>
           Delete
         </Button>
       </div>

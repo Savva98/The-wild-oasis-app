@@ -13,6 +13,10 @@ import Spinner from "../../ui/Spinner";
 import { useMoveBack } from "../../hooks/useMoveBack";
 import { useGetBookingById } from "./useGetBookingById";
 import { useNavigate } from "react-router";
+import CheckoutButton from "../check-in-out/CheckoutButton";
+import { Modal } from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import useDeleteBooking from "./useDeleteBooking";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -22,6 +26,7 @@ const HeadingGroup = styled.div`
 
 function BookingDetail() {
   const { data: booking, isLoading } = useGetBookingById();
+  const { mutate: deleteMutate } = useDeleteBooking();
   const status = booking?.status || "unconfirmed";
   const moveBack = useMoveBack();
   const navigate = useNavigate();
@@ -33,13 +38,19 @@ function BookingDetail() {
   if (isLoading) {
     return <Spinner />;
   }
+  const handleDelete = () => {
+    deleteMutate(booking.id, {
+      onSettled: () => {
+        navigate("/bookings");
+      },
+    });
+  };
 
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
-    confirmed: "green",
-    canceled: "red",
+    cancelled: "red",
   };
 
   return (
@@ -55,6 +66,15 @@ function BookingDetail() {
       <BookingDataBox booking={booking} />
 
       <ButtonGroup>
+        <Modal>
+          <Modal.Content name="deleteBooking">
+            <ConfirmDelete
+              resourceName={`on name ${booking.guestId.fullName} for cabin: ${booking.cabinId.name}`}
+              resourceType={`booking`}
+              handleFunction={handleDelete}
+            />
+          </Modal.Content>
+        </Modal>
         {status === "unconfirmed" && (
           <Button
             onClick={() => navigate(`/checkin/${booking.id}`)}
@@ -63,6 +83,9 @@ function BookingDetail() {
           >
             Check in
           </Button>
+        )}
+        {status === "checked-in" && (
+          <CheckoutButton status={status} bookingId={booking.id} />
         )}
         <Button variant="secondary" onClick={moveBack} size="medium">
           Back

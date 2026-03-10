@@ -5,11 +5,11 @@ import { getDatabyId } from "../../services/generalApiCalls";
 import { BookingType } from "../../types/types";
 import { useParams } from "react-router";
 
-export function useGetBookingById() {
+export function useGetBookingById(endpoint = "bookings") {
   const { bookingId } = useParams<{ bookingId: string }>();
   const { data, error, isLoading } = useQuery<BookingType, Error>({
-    queryKey: ["booking", bookingId],
-    queryFn: () => getDatabyId("bookings", bookingId),
+    queryKey: [endpoint, bookingId],
+    queryFn: () => getDatabyId(endpoint, bookingId),
     enabled: !!bookingId,
   });
   useEffect(() => {
